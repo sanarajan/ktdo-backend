@@ -1,0 +1,21 @@
+export enum UserRole {
+    MAIN_ADMIN = 'MAIN_ADMIN',
+    DISTRICT_ADMIN = 'DISTRICT_ADMIN',
+    MEMBER = 'MEMBER'
+}
+
+export enum ApprovalStatus {
+    PENDING = 'PENDING',
+    APPROVED = 'APPROVED',
+    REJECTED = 'REJECTED'
+}
+
+export enum HttpCode {
+    OK = 200,
+    CREATED = 201,
+    BAD_REQUEST = 400,
+    UNAUTHORIZED = 401,
+    FORBIDDEN = 403,
+    NOT_FOUND = 404,
+    INTERNAL_SERVER_ERROR = 500,
+}
