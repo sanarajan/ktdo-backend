@@ -17,8 +17,12 @@ dotenv.config();
 const app = express();
 
 // Middleware
+// Middleware
 app.use(cors({
-    origin: 'http://localhost:5173', // Frontend URL
+    // Replace the URL below with your actual Vercel deployment URL
+    origin: process.env.NODE_ENV === 'production' 
+            ? 'https://ktdo-frontend.vercel.app' 
+            : 'http://localhost:5173', 
     credentials: true
 }));
 app.use(express.json());
