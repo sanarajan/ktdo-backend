@@ -17,18 +17,17 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
-    
-  'https://ktdo-frontend.vercel.app', // Your main production URL
-  'https://ktdo-frontend-36rrujmn0-sanas-projects-bef62fa3.vercel.app', // The specific URL you are using now,
-    'http://localhost:5173' // Local development URL
+  'https://ktdo-frontend.vercel.app', 
+  'http://localhost:5173'
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
+  origin: (origin, callback) => {
+    // 1. Allow if no origin (like mobile apps/Postman)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
+    // 2. Allow if it's in our list OR ends with .vercel.app
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
