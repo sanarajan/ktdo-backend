@@ -16,15 +16,34 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
-// Middleware
+const allowedOrigins = [
+    
+  'https://ktdo-frontend.vercel.app', // Your main production URL
+  'https://ktdo-frontend-36rrujmn0-sanas-projects-bef62fa3.vercel.app', // The specific URL you are using now,
+    'http://localhost:5173' // Local development URL
+];
+
 app.use(cors({
-    // Replace the URL below with your actual Vercel deployment URL
-    origin: process.env.NODE_ENV === 'production' 
-            ? 'https://ktdo-frontend.vercel.app' 
-            : 'http://localhost:5173', 
-    credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
+// Middleware
+// app.use(cors({
+//     // Replace the URL below with your actual Vercel deployment URL
+//     origin: process.env.NODE_ENV === 'production' 
+//             ? 'https://ktdo-frontend.vercel.app' 
+//             : 'http://localhost:5173', 
+//     credentials: true
+// }));
 app.use(express.json());
 app.use(cookieParser());
 
