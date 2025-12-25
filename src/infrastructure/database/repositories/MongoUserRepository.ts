@@ -16,6 +16,7 @@ export class MongoUserRepository implements IUserRepository {
     }
 
     async create(user: User): Promise<User> {
+        console.log("is here exist for creation")
         const newUser = new UserModel(user);
         const saved = await newUser.save();
         return saved.toObject() as unknown as User;

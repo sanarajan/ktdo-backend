@@ -14,5 +14,6 @@ export interface User {
     isBlocked?: boolean;
     createdAt: Date;
     updatedAt: Date;
+    photoUrl?: string;
 }
 

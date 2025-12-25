@@ -22,8 +22,10 @@ export class AdminController {
 
     async createDistrictAdmin(req: Request, res: Response, next: NextFunction) {
         try {
-            const filePath = (req as any).file?.path;
-            const admin = await this.createDistrictAdminUseCase.execute(req.body, filePath);
+        console.log('File contriler:', (req as any).file);
+
+        const file = (req as any).file; // buffer-based file
+            const admin = await this.createDistrictAdminUseCase.execute(req.body, file);
             res.status(201).json({
                 success: true,
                 message: 'District Admin created successfully',
@@ -53,7 +55,8 @@ export class AdminController {
 
     async addMember(req: Request, res: Response, next: NextFunction) {
         try {
-            const filePath = (req as any).file?.path;
+            const file = (req as any).file;
+            // const filePath = (req as any).file?.path;
             const user = (req as any).user;
 
             // Enforce District Admin restriction
@@ -63,7 +66,7 @@ export class AdminController {
                 req.body.status = 'APPROVED'; // District Admins approve their own members? Or PENDING? Usually they add approved members.
             }
 
-            const member = await this.addMemberUseCase.execute(req.body, filePath);
+            const member = await this.addMemberUseCase.execute(req.body, file);
             res.status(201).json({
                 success: true,
                 message: 'Registration successful',
@@ -109,11 +112,14 @@ export class AdminController {
 
     async updateMember(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log("reaches update")
             const { memberId } = req.params;
             const updateData = req.body;
-            const filePath = (req as any).file?.path;
 
-            const updatedMember = await this.updateMemberUseCase.execute(memberId, updateData, filePath);
+            const file = (req as any).file;
+            console.log('Update Member Request File:',  (req as any).file);
+
+            const updatedMember = await this.updateMemberUseCase.execute(memberId, updateData, file);
             res.status(200).json({
                 success: true,
                 message: 'Member updated successfully',

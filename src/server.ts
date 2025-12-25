@@ -1,8 +1,10 @@
 import 'reflect-metadata';
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 import './container'; // Register DI
 import { connectDB } from './infrastructure/database/connect';
 import { seedAdmin } from './infrastructure/database/seeders/adminSeeder';
@@ -17,15 +19,18 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
-  'https://ktdo-frontend.vercel.app', 
-  'http://localhost:5173'
+  'https://ktdo-frontend.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:5174'
 ];
 
 app.use(cors({
+
   origin: (origin, callback) => {
+    console.log('CORS Origin:', origin);
     // 1. Allow if no origin (like mobile apps/Postman)
     if (!origin) return callback(null, true);
-    
+
     // 2. Allow if it's in our list OR ends with .vercel.app
     if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       callback(null, true);
@@ -49,8 +54,8 @@ app.use(cookieParser());
 // Database
 // Database and Seeding
 connectDB().then(async () => {
-    await seedAdmin();
-    await seedLocations();
+  await seedAdmin();
+  await seedLocations();
 });
 
 // Routes
@@ -64,5 +69,5 @@ app.use(errorMiddleware);
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

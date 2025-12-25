@@ -21,7 +21,7 @@ export const seedAdmin = async () => {
             });
 
             await admin.save();
-            console.log('✅ Default Admin Created: admin@gmail.com / 123456');
+          //  console.log('✅ Default Admin Created: admin@gmail.com / 123456');
         } else {
             console.log('ℹ️ Default Admin already exists.');
         }

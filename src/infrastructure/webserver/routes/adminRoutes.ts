@@ -12,7 +12,7 @@ router.post(
     '/district-admin',
     protect(),
     authorize(UserRole.MAIN_ADMIN),
-    upload.single('photo'),
+   upload.single('photo'),
     (req: Request, res: Response, next: NextFunction) => adminController.createDistrictAdmin(req, res, next)
 );
 
