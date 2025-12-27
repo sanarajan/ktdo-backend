@@ -11,6 +11,7 @@ export class UserMapper {
             phone: userDoc.phone,
             address: userDoc.address,
             isBlocked: userDoc.isBlocked,
+            photoUrl:userDoc.photoUrl,
             createdAt: userDoc.createdAt,
             updatedAt: userDoc.updatedAt,
             // Add other fields as necessary, strictly typing against User interface
