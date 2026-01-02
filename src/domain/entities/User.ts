@@ -7,13 +7,17 @@ export interface User {
     name: string;
     role: UserRole;
     phone?: string;
-    address?: string;
-    licenseNumber?: string; // For members/drivers
-    vehicleNumber?: string; // For members/drivers
+    state?: string;
+    houseName?: string;
+    place?: string;
     district?: string; // For district admins
     isBlocked?: boolean;
     createdAt: Date;
     updatedAt: Date;
     photoUrl?: string;
+    createdBy?: string; // role who created this record (e.g., DISTRICT_ADMIN or MEMBER)
+    createdById?: string; // optional ID of user who created this record
+    isDeleted?: boolean;
+    deletedAt?: Date;
 }
 

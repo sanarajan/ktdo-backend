@@ -1,7 +1,7 @@
 import { injectable, inject } from "tsyringe";
 import { IUserRepository } from "../../domain/repositories/IUserRepository";
 import { DistrictAdmin } from "../../domain/entities/DistrictAdmin";
-import { UserRole } from "../../common/enums";
+import { UserRole, ApprovalStatus } from "../../common/enums";
 import { ILogger, IStorageService } from "../../common/interfaces";
 import bcrypt from "bcrypt";
 
@@ -19,6 +19,19 @@ export class CreateDistrictAdminUseCase {
   ): Promise<DistrictAdmin> {
     const existing = await this.userRepo.findByEmail(data.email!);
     if (existing) throw new Error("Email already exists");
+
+    // Check if phone number already exists
+    const existingPhone = await this.userRepo.findByPhone(data.phone!);
+    if (existingPhone) throw new Error("Phone number already exists");
+
+    // Ensure only one district admin per district
+    if (data.state && data.district) {
+      const districtAdmins = await this.userRepo.findAllByRole(UserRole.DISTRICT_ADMIN);
+      const conflict = (districtAdmins || []).find(da => da.state === data.state && da.district === data.district);
+      if (conflict) {
+        throw new Error('A District Admin already exists for this state/district');
+      }
+    }
 
     let photoUrl = "";
     if (file) {
@@ -41,6 +54,7 @@ export class CreateDistrictAdminUseCase {
       ...data,
       password: hashedPassword,
       role: UserRole.DISTRICT_ADMIN,
+      status: ApprovalStatus.APPROVED, // District admins are immediately active
       photoUrl: photoUrl || undefined,
     } as DistrictAdmin;
 

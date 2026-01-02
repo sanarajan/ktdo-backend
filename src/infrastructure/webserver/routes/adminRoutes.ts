@@ -38,6 +38,13 @@ router.get(
     (req: Request, res: Response, next: NextFunction) => adminController.getDistrictAdmins(req, res, next)
 );
 
+router.delete(
+    '/district-admin/:adminId',
+    protect(),
+    authorize(UserRole.MAIN_ADMIN),
+    (req: Request, res: Response, next: NextFunction) => adminController.deleteDistrictAdmin(req, res, next)
+);
+
 router.get(
     '/members',
     protect(),
@@ -51,6 +58,30 @@ router.patch(
     authorize(UserRole.MAIN_ADMIN, UserRole.DISTRICT_ADMIN),
     upload.single('photo'),
     (req: Request, res: Response, next: NextFunction) => adminController.updateMember(req, res, next)
+);
+
+// Approve or reject a member (status + uniqueId assignment on approve)
+router.patch(
+    '/members/:memberId/status',
+    protect(),
+    authorize(UserRole.MAIN_ADMIN, UserRole.DISTRICT_ADMIN),
+    (req: Request, res: Response, next: NextFunction) => adminController.approveMember(req, res, next)
+);
+
+// Record print ID count
+router.post(
+    '/members/:memberId/print-record',
+    protect(),
+    authorize(UserRole.MAIN_ADMIN, UserRole.DISTRICT_ADMIN),
+    (req: Request, res: Response, next: NextFunction) => adminController.recordPrintId(req, res, next)
+);
+
+// Delete member (soft delete if already printed)
+router.delete(
+    '/members/:memberId',
+    protect(),
+    authorize(UserRole.MAIN_ADMIN, UserRole.DISTRICT_ADMIN),
+    (req: Request, res: Response, next: NextFunction) => adminController.deleteMember(req, res, next)
 );
 
 export default router;

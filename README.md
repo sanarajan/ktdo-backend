@@ -8,6 +8,14 @@ Independent backend API for the Driver Membership Application.
 npm install
 ```
 
+## Database
+
+Start the local MongoDB server:
+
+```bash
+npm run db:start
+```
+
 ## Environment Variables
 
 Create a `.env` file in the root directory:

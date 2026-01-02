@@ -20,10 +20,7 @@ export interface DistrictAdmin extends User {
 
 export interface Driver extends User {
     districtAdminId: string;
-    licenseNumber: string;
-    vehicleNumber: string;
-    state?: string;
-    district?: string;
+        // legacy fields removed: licenseNumber, vehicleNumber, post, emergencyContact
     post?: string;
     pin?: string;
     bloodGroup?: string;

@@ -14,8 +14,8 @@ export class AuthController {
 
     async register(req: Request, res: Response, next: NextFunction) {
         try {
-            const filePath = (req as any).file?.path;
-            const driver = await this.registerDriverUseCase.execute(req.body, filePath);
+            const file = (req as any).file; // Get the file buffer from multer
+            const driver = await this.registerDriverUseCase.execute(req.body, file);
             res.status(201).json({
                 success: true,
                 message: 'Registration successful',
@@ -43,6 +43,20 @@ export class AuthController {
                 message: 'Login successful',
                 data: { user, tokens }
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async logout(req: Request, res: Response, next: NextFunction) {
+        try {
+            // Clear the refresh token cookie
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict'
+            });
+            res.status(200).json({ success: true, message: 'Logout successful' });
         } catch (error) {
             next(error);
         }

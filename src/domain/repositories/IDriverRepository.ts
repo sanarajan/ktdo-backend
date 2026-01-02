@@ -3,6 +3,8 @@ import { IUserRepository } from './IUserRepository';
 
 export interface IDriverRepository extends IUserRepository {
     findByDistrictAdminId(adminId: string): Promise<Driver[]>;
+    findByStateAndDistrict(state: string, district: string): Promise<Driver[]>;
     updateStatus(driverId: string, status: string): Promise<Driver | null>;
     assignUniqueId(driverId: string, uniqueId: string): Promise<Driver | null>;
+    getNextUniqueId(): Promise<string>;
 }

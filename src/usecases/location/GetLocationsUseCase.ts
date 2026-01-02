@@ -12,4 +12,10 @@ export class GetLocationsUseCase {
         const location = await Location.findOne({ state });
         return location ? location.districts.sort() : [];
     }
+
+    async getStateCodes(): Promise<{ state: string; code: string }[]> {
+        // Read state codes from Location documents (field: stateCode)
+        const locations = await Location.find({}, { state: 1, stateCode: 1, _id: 0 }).sort({ state: 1 });
+        return locations.map((loc: any) => ({ state: loc.state, code: loc.stateCode || '' }));
+    }
 }

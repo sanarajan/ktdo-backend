@@ -7,7 +7,6 @@ const jwtService = container.resolve(JwtService);
 
 export const protect = (roles: UserRole[] = []) => {
     return async (req: Request, res: Response, next: NextFunction) => {
-        console.log("middleware reached")
         let token = req.headers.authorization?.split(' ')[1];
 
         if (!token && req.cookies?.accessToken) {
@@ -15,15 +14,16 @@ export const protect = (roles: UserRole[] = []) => {
         }
 
         if (!token) {
-            console.log("no token")
             return res.status(401).json({ success: false, message: 'Not authorized' });
         }
 
         try {
-            const decoded = jwtService.verifyAccessToken(token);
+            const decoded: any = jwtService.verifyAccessToken(token);
             if (!decoded) {
                 return res.status(401).json({ success: false, message: 'Invalid token' });
             }
+            // Normalize id field from token payload (support id or _id)
+            if (decoded._id && !decoded.id) decoded.id = decoded._id;
             (req as any).user = decoded;
 
             if (roles.length > 0 && !roles.includes((decoded as any).role)) {
@@ -31,7 +31,6 @@ export const protect = (roles: UserRole[] = []) => {
                 return res.status(403).json({ success: false, message: 'Forbidden' });
             }
        
- console.log("middleware out success")
             next();
         } catch (err) {
              console.log("middleware error", err)

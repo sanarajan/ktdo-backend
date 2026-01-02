@@ -36,4 +36,13 @@ export class LocationController {
             next(error);
         }
     }
+
+    async getStateCodes(req: Request, res: Response, next: NextFunction) {
+        try {
+            const codes = await this.getLocationsUseCase.getStateCodes();
+            res.status(200).json({ success: true, message: 'State codes retrieved', data: codes });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

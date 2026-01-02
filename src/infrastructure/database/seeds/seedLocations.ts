@@ -125,13 +125,50 @@ const indianLocations = [
 
 export const seedLocations = async () => {
     try {
+        const mapping: Record<string, string> = {
+            'Andhra Pradesh': 'AP',
+            'Arunachal Pradesh': 'AR',
+            'Assam': 'AS',
+            'Bihar': 'BR',
+            'Chhattisgarh': 'CG',
+            'Goa': 'GA',
+            'Gujarat': 'GJ',
+            'Haryana': 'HR',
+            'Himachal Pradesh': 'HP',
+            'Jharkhand': 'JH',
+            'Karnataka': 'KA',
+            'Kerala': 'KL',
+            'Madhya Pradesh': 'MP',
+            'Maharashtra': 'MH',
+            'Manipur': 'MN',
+            'Meghalaya': 'ML',
+            'Mizoram': 'MZ',
+            'Nagaland': 'NL',
+            'Odisha': 'OD',
+            'Punjab': 'PB',
+            'Rajasthan': 'RJ',
+            'Sikkim': 'SK',
+            'Tamil Nadu': 'TN',
+            'Telangana': 'TG',
+            'Tripura': 'TR',
+            'Uttar Pradesh': 'UP',
+            'Uttarakhand': 'UK',
+            'West Bengal': 'WB'
+        };
+
         const count = await Location.countDocuments();
         if (count === 0) {
-            console.log('Seeding locations...');
-            await Location.insertMany(indianLocations);
+            console.log('Seeding locations with state codes...');
+            const locationsWithCodes = indianLocations.map(loc => ({ ...loc, stateCode: mapping[loc.state] || '' }));
+            await Location.insertMany(locationsWithCodes);
             console.log('✅ Locations seeded successfully!');
         } else {
-            console.log('ℹ️ Locations already exist.');
+            console.log('ℹ️ Locations already exist. Ensuring stateCode fields are present...');
+            // Backfill stateCode for existing documents where missing or empty
+            for (const [stateName, code] of Object.entries(mapping)) {
+                await Location.updateOne({ state: stateName, $or: [{ stateCode: { $exists: false } }, { stateCode: '' }] }, { $set: { stateCode: code } });
+            }
+            console.log('✅ Backfill completed.');
         }
     } catch (error) {
         console.error('❌ Error seeding locations:', error);
