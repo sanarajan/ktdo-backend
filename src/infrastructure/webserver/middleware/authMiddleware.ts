@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { UserRole } from '../../../common/enums';
 import { container } from '../../../container';
 import { JwtService } from '../../auth/JwtService';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 
 const jwtService = container.resolve(JwtService);
 
@@ -24,6 +25,26 @@ export const protect = (roles: UserRole[] = []) => {
             }
             // Normalize id field from token payload (support id or _id)
             if (decoded._id && !decoded.id) decoded.id = decoded._id;
+
+            // Check if user still exists in database
+            const userRepository = container.resolve<IUserRepository>('IUserRepository');
+            const user = await userRepository.findById(decoded.id);
+            
+            if (!user) {
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'User account no longer exists. Please login again.' 
+                });
+            }
+
+            // Check if user is blocked
+            if ((user as any).isBlocked) {
+                return res.status(403).json({ 
+                    success: false, 
+                    message: 'Your account has been blocked. Please contact administrator.' 
+                });
+            }
+
             (req as any).user = decoded;
 
             if (roles.length > 0 && !roles.includes((decoded as any).role)) {

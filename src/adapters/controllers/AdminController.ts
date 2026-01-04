@@ -148,6 +148,9 @@ export class AdminController {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 10;
             const search = (req.query.search as string) || '';
+            const bloodGroup = (req.query.bloodGroup as string) || '';
+            const stateRtoCode = (req.query.stateRtoCode as string) || '';
+            const status = (req.query.status as string) || '';
             
             // If District Admin, fetch by both their assigned members and members in their state/district
             const isDistrictAdmin = user && user.role === 'DISTRICT_ADMIN';
@@ -161,7 +164,10 @@ export class AdminController {
                 district,
                 page,
                 limit,
-                search
+                search,
+                bloodGroup,
+                stateRtoCode,
+                status
             });
             
             console.log('Members retrieved count:', result.members.length);

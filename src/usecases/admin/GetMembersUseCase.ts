@@ -18,8 +18,11 @@ export class GetMembersUseCase {
         page?: number;
         limit?: number;
         search?: string;
+        bloodGroup?: string;
+        stateRtoCode?: string;
+        status?: string;
     }): Promise<{ members: Driver[]; total: number; page: number; totalPages: number }> {
-        let { districtAdminId, state, district, page = 1, limit = 10, search = '' } = options || {};
+        let { districtAdminId, state, district, page = 1, limit = 10, search = '', bloodGroup = '', stateRtoCode = '', status = '' } = options || {};
 
         // If districtAdminId is present but state/district are missing, fetch them from DB
         if (districtAdminId && (!state || !district)) {
@@ -69,10 +72,43 @@ export class GetMembersUseCase {
         let filteredMembers = allMembers;
         if (search) {
             const searchLower = search.toLowerCase();
-            filteredMembers = allMembers.filter(member => 
-                member.name.toLowerCase().includes(searchLower) ||
-                member.email.toLowerCase().includes(searchLower) ||
-                member.phone?.includes(search)
+            // For district admin, don't search by state/district (they're already filtered by it)
+            // For main admin, include state/district in search
+            if (districtAdminId) {
+                filteredMembers = allMembers.filter(member => 
+                    member.name.toLowerCase().includes(searchLower) ||
+                    member.email.toLowerCase().includes(searchLower) ||
+                    member.phone?.includes(search)
+                );
+            } else {
+                filteredMembers = allMembers.filter(member => 
+                    member.name.toLowerCase().includes(searchLower) ||
+                    member.email.toLowerCase().includes(searchLower) ||
+                    member.phone?.includes(search) ||
+                    member.state?.toLowerCase().includes(searchLower) ||
+                    member.district?.toLowerCase().includes(searchLower)
+                );
+            }
+        }
+
+        // Apply blood group filter
+        if (bloodGroup) {
+            filteredMembers = filteredMembers.filter(member => 
+                member.bloodGroup?.toLowerCase() === bloodGroup.toLowerCase()
+            );
+        }
+
+        // Apply RTO code filter
+        if (stateRtoCode) {
+            filteredMembers = filteredMembers.filter(member => 
+                member.stateRtoCode?.toLowerCase().includes(stateRtoCode.toLowerCase())
+            );
+        }
+
+        // Apply status filter
+        if (status) {
+            filteredMembers = filteredMembers.filter(member => 
+                member.status?.toLowerCase() === status.toLowerCase()
             );
         }
 
