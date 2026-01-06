@@ -201,4 +201,52 @@ export class EmailService implements IEmailService {
             throw error;
         }
     }
+
+    async sendDistrictAdminCreatedEmail(email: string, adminName: string, state: string, district: string, password: string): Promise<void> {
+        if (!this.transporter) {
+            this.logger.warn('Email service not available');
+            return;
+        }
+
+        try {
+            const subject = 'You Are Appointed as District Admin - KTDO';
+            const html = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2>Congratulations, ${adminName}!</h2>
+                    <p>You have been appointed as a <strong>District Admin</strong> for KTDO (Kerala Taxi Driver Organization).</p>
+                    <br>
+                    <p><strong>Your Assignment:</strong></p>
+                    <ul>
+                        <li><strong>State:</strong> ${state}</li>
+                        <li><strong>District:</strong> ${district}</li>
+                    </ul>
+                    <br>
+                    <p><strong>Login Credentials:</strong></p>
+                    <ul>
+                        <li><strong>Email:</strong> ${email}</li>
+                        <li><strong>Password:</strong> ${password}</li>
+                    </ul>
+                    <br>
+                    <p>You can now login to the admin dashboard and manage members in your district.</p>
+                    <p><em>For security reasons, please change your password after your first login.</em></p>
+                    <br>
+                    <p>If you have any questions, please contact the main administrator.</p>
+                    <br>
+                    <p>Best regards,<br>KTDO Team</p>
+                </div>
+            `;
+
+            await this.transporter.sendMail({
+                from: process.env.FROM_EMAIL || process.env.SMTP_USER,
+                to: email,
+                subject,
+                html
+            });
+
+            this.logger.info('District admin created email sent', { email });
+        } catch (error) {
+            this.logger.error('Failed to send district admin created email', error instanceof Error ? error.message : String(error));
+            throw error;
+        }
+    }
 }

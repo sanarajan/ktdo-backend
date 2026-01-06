@@ -11,7 +11,8 @@ export class CreateDistrictAdminUseCase implements ICreateDistrictAdminUseCase {
     @inject('IUserRepository') private userRepo: IUserRepository,
     @inject('ILoggerService') private logger: ILoggerService,
     @inject('IStorageService') private storageService: IStorageService,
-    @inject('IHashService') private hashService: IHashService
+    @inject('IHashService') private hashService: IHashService,
+    @inject('IEmailService') private emailService: any
   ) {}
 
   async execute(
@@ -59,6 +60,23 @@ export class CreateDistrictAdminUseCase implements ICreateDistrictAdminUseCase {
       photoUrl: photoUrl || undefined,
     } as DistrictAdmin;
 
-    return (await this.userRepo.create(adminData)) as DistrictAdmin;
+    const result = (await this.userRepo.create(adminData)) as DistrictAdmin;
+
+    // Send district admin creation email (non-blocking)
+    try {
+      await this.emailService.sendDistrictAdminCreatedEmail(
+        data.email!,
+        data.name!,
+        data.state!,
+        data.district!,
+        data.password! // Send the plain text password
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn('Failed to send district admin creation email', message);
+      // Don't throw - email failure shouldn't prevent admin creation
+    }
+
+    return result;
   }
 }
