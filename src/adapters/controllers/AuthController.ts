@@ -1,24 +1,41 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
-import { RegisterDriverUseCase } from '../../usecases/auth/RegisterDriverUseCase';
-import { LoginUserUseCase } from '../../usecases/auth/LoginUserUseCase';
-import { HttpCode } from '../../common/enums';
-import { SuccessMessage } from '../../common/constants';
+import { IRegisterDriverUseCase } from '../../application/usecases/interface/auth/IRegisterDriverUseCase';
+import { ILoginUserUseCase } from '../../application/usecases/interface/auth/ILoginUserUseCase';
+import { IResetPasswordUseCase } from '../../application/usecases/interface/auth/IResetPasswordUseCase';
+import { StatusCode, SuccessMessage } from '../../common/constants';
 
 @injectable()
 export class AuthController {
     constructor(
-        @inject(RegisterDriverUseCase) private registerDriverUseCase: RegisterDriverUseCase,
-        @inject(LoginUserUseCase) private loginUserUseCase: LoginUserUseCase
+        @inject('IRegisterDriverUseCase') private registerDriverUseCase: IRegisterDriverUseCase,
+        @inject('ILoginUserUseCase') private loginUserUseCase: ILoginUserUseCase,
+        @inject('IResetPasswordUseCase') private resetPasswordUseCase: IResetPasswordUseCase
     ) { }
+
+    async resetPassword(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { currentPassword, newPassword } = req.body;
+            const userId = (req as any).user.id;
+
+            await this.resetPasswordUseCase.execute(userId, currentPassword, newPassword);
+
+            res.status(StatusCode.OK).json({
+                success: true,
+                message: SuccessMessage.PASSWORD_RESET_SUCCESS
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 
     async register(req: Request, res: Response, next: NextFunction) {
         try {
             const file = (req as any).file; // Get the file buffer from multer
             const driver = await this.registerDriverUseCase.execute(req.body, file);
-            res.status(201).json({
+            res.status(StatusCode.CREATED).json({
                 success: true,
-                message: 'Registration successful',
+                message: SuccessMessage.REGISTRATION_SUCCESS,
                 data: driver
             });
         } catch (error) {
@@ -38,9 +55,9 @@ export class AuthController {
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             });
 
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
-                message: 'Login successful',
+                message: SuccessMessage.LOGIN_SUCCESS,
                 data: { user, tokens }
             });
         } catch (error) {
@@ -56,7 +73,7 @@ export class AuthController {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict'
             });
-            res.status(200).json({ success: true, message: 'Logout successful' });
+            res.status(StatusCode.OK).json({ success: true, message: SuccessMessage.LOGOUT_SUCCESS });
         } catch (error) {
             next(error);
         }

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Location from '../schemas/LocationSchema';
-import { connectDB } from '../connect';
+import { connectDB } from '../../config/connect';
 import dotenv from 'dotenv';
 import path from 'path';
 

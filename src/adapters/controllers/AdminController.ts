@@ -1,31 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'tsyringe';
-import { CreateDistrictAdminUseCase } from '../../usecases/admin/CreateDistrictAdminUseCase';
-import { ToggleBlockStatusUseCase } from '../../usecases/admin/ToggleBlockStatusUseCase';
-import { AddMemberUseCase } from '../../usecases/admin/AddMemberUseCase';
-import { GetDistrictAdminsUseCase } from '../../usecases/admin/GetDistrictAdminsUseCase';
-import { DeleteDistrictAdminUseCase } from '../../usecases/admin/DeleteDistrictAdminUseCase';
-import { GetMembersUseCase } from '../../usecases/admin/GetMembersUseCase';
-import { UpdateMemberUseCase } from '../../usecases/admin/UpdateMemberUseCase';
-import { ApproveMemberUseCase } from '../../usecases/admin/ApproveMemberUseCase';
-import { RecordPrintIdUseCase } from '../../usecases/admin/RecordPrintIdUseCase';
-import { DeleteMemberUseCase } from '../../usecases/admin/DeleteMemberUseCase';
-import { HttpCode } from '../../common/enums';
-import { SuccessMessage, ErrorMessage } from '../../common/constants';
+import { ICreateDistrictAdminUseCase } from '../../application/usecases/interface/admin/ICreateDistrictAdminUseCase';
+import { IToggleBlockStatusUseCase } from '../../application/usecases/interface/admin/IToggleBlockStatusUseCase';
+import { IAddMemberUseCase } from '../../application/usecases/interface/admin/IAddMemberUseCase';
+import { IGetDistrictAdminsUseCase } from '../../application/usecases/interface/admin/IGetDistrictAdminsUseCase';
+import { IDeleteDistrictAdminUseCase } from '../../application/usecases/interface/admin/IDeleteDistrictAdminUseCase';
+import { IGetMembersUseCase } from '../../application/usecases/interface/admin/IGetMembersUseCase';
+import { IUpdateMemberUseCase } from '../../application/usecases/interface/admin/IUpdateMemberUseCase';
+import { IApproveMemberUseCase } from '../../application/usecases/interface/admin/IApproveMemberUseCase';
+import { IRecordPrintIdUseCase } from '../../application/usecases/interface/admin/IRecordPrintIdUseCase';
+import { IDeleteMemberUseCase } from '../../application/usecases/interface/admin/IDeleteMemberUseCase';
+import { StatusCode, SuccessMessage, ErrorMessage } from '../../common/constants';
 
 @injectable()
 export class AdminController {
     constructor(
-        @inject(CreateDistrictAdminUseCase) private createDistrictAdminUseCase: CreateDistrictAdminUseCase,
-        @inject(ToggleBlockStatusUseCase) private toggleBlockStatusUseCase: ToggleBlockStatusUseCase,
-        @inject(AddMemberUseCase) private addMemberUseCase: AddMemberUseCase,
-        @inject(GetDistrictAdminsUseCase) private getDistrictAdminsUseCase: GetDistrictAdminsUseCase,
-        private getMembersUseCase: GetMembersUseCase,
-        @inject(DeleteDistrictAdminUseCase) private deleteDistrictAdminUseCase: DeleteDistrictAdminUseCase,
-        @inject(UpdateMemberUseCase) private updateMemberUseCase: UpdateMemberUseCase,
-        @inject(ApproveMemberUseCase) private approveMemberUseCase: ApproveMemberUseCase,
-        @inject(RecordPrintIdUseCase) private recordPrintIdUseCase: RecordPrintIdUseCase,
-        @inject(DeleteMemberUseCase) private deleteMemberUseCase: DeleteMemberUseCase
+        @inject('ICreateDistrictAdminUseCase') private createDistrictAdminUseCase: ICreateDistrictAdminUseCase,
+        @inject('IToggleBlockStatusUseCase') private toggleBlockStatusUseCase: IToggleBlockStatusUseCase,
+        @inject('IAddMemberUseCase') private addMemberUseCase: IAddMemberUseCase,
+        @inject('IGetDistrictAdminsUseCase') private getDistrictAdminsUseCase: IGetDistrictAdminsUseCase,
+        @inject('IGetMembersUseCase') private getMembersUseCase: IGetMembersUseCase,
+        @inject('IDeleteDistrictAdminUseCase') private deleteDistrictAdminUseCase: IDeleteDistrictAdminUseCase,
+        @inject('IUpdateMemberUseCase') private updateMemberUseCase: IUpdateMemberUseCase,
+        @inject('IApproveMemberUseCase') private approveMemberUseCase: IApproveMemberUseCase,
+        @inject('IRecordPrintIdUseCase') private recordPrintIdUseCase: IRecordPrintIdUseCase,
+        @inject('IDeleteMemberUseCase') private deleteMemberUseCase: IDeleteMemberUseCase
     ) { }
 
     async createDistrictAdmin(req: Request, res: Response, next: NextFunction) {
@@ -44,9 +43,9 @@ export class AdminController {
             }
 
             const admin = await this.createDistrictAdminUseCase.execute(req.body, file);
-            res.status(201).json({
+            res.status(StatusCode.CREATED).json({
                 success: true,
-                message: 'District Admin created successfully',
+                message: SuccessMessage.DISTRICT_ADMIN_CREATED,
                 data: admin
             });
         } catch (error) {
@@ -59,11 +58,11 @@ export class AdminController {
             const { userId } = req.params;
             const user = await this.toggleBlockStatusUseCase.execute(userId);
             if (!user) {
-                return res.status(404).json({ success: false, message: 'User not found' });
+                return res.status(StatusCode.NOT_FOUND).json({ success: false, message: ErrorMessage.USER_NOT_FOUND });
             }
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
-                message: user.isBlocked ? 'User blocked successfully' : 'User unblocked successfully',
+                message: user.isBlocked ? SuccessMessage.USER_BLOCKED : SuccessMessage.USER_UNBLOCKED,
                 data: user
             });
         } catch (error) {
@@ -105,9 +104,9 @@ export class AdminController {
 
 
             const member = await this.addMemberUseCase.execute(req.body, file);
-            res.status(201).json({
+            res.status(StatusCode.CREATED).json({
                 success: true,
-                message: 'Registration successful',
+                message: SuccessMessage.MEMBER_ADDED,
                 data: member
             });
         } catch (error) {
@@ -118,9 +117,9 @@ export class AdminController {
     async getDistrictAdmins(req: Request, res: Response, next: NextFunction) {
         try {
             const admins = await this.getDistrictAdminsUseCase.execute();
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
-                message: 'District Admins retrieved successfully',
+                message: SuccessMessage.DISTRICT_ADMINS_RETRIEVED,
                 data: admins
             });
         } catch (error) {
@@ -133,9 +132,9 @@ export class AdminController {
             const { adminId } = req.params;
             const success = await this.deleteDistrictAdminUseCase.execute(adminId);
             if (!success) {
-                return res.status(400).json({ success: false, message: 'Failed to delete district admin' });
+                return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: ErrorMessage.DELETE_DISTRICT_ADMIN_FAILED });
             }
-            res.status(200).json({ success: true, message: 'District admin deleted successfully' });
+            res.status(StatusCode.OK).json({ success: true, message: SuccessMessage.DISTRICT_ADMIN_DELETED });
         } catch (error: any) {
             next(error);
         }
@@ -171,9 +170,9 @@ export class AdminController {
             });
             
             console.log('Members retrieved count:', result.members.length);
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
-                message: 'Members retrieved successfully',
+                message: SuccessMessage.MEMBERS_RETRIEVED,
                 data: result.members,
                 pagination: {
                     total: result.total,
@@ -197,9 +196,9 @@ export class AdminController {
             console.log('Update Member Request File:',  (req as any).file);
 
             const updatedMember = await this.updateMemberUseCase.execute(memberId, updateData, file);
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
-                message: 'Member updated successfully',
+                message: SuccessMessage.MEMBER_UPDATED,
                 data: updatedMember
             });
         } catch (error) {
@@ -213,14 +212,14 @@ export class AdminController {
             const { action, reason } = req.body; // APPROVED or REJECTED
 
             if (!action || (action !== 'APPROVED' && action !== 'REJECTED')) {
-                return res.status(400).json({ success: false, message: 'Invalid action' });
+                return res.status(StatusCode.BAD_REQUEST).json({ success: false, message: ErrorMessage.INVALID_ACTION });
             }
 
             const updated = await this.approveMemberUseCase.execute(memberId, action, reason);
 
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
-                message: 'Member status updated',
+                message: SuccessMessage.MEMBER_STATUS_UPDATED,
                 data: updated
             });
         } catch (error) {
@@ -234,9 +233,9 @@ export class AdminController {
             
             const updated = await this.recordPrintIdUseCase.execute(memberId);
 
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
-                message: 'Print count recorded',
+                message: SuccessMessage.PRINT_COUNT_RECORDED,
                 data: updated
             });
         } catch (error) {
@@ -250,9 +249,9 @@ export class AdminController {
 
             const result = await this.deleteMemberUseCase.execute(memberId);
 
-            res.status(200).json({
+            res.status(StatusCode.OK).json({
                 success: true,
-                message: result.softDeleted ? 'Member soft-deleted after print' : 'Member permanently deleted',
+                message: result.softDeleted ? SuccessMessage.MEMBER_SOFT_DELETED : SuccessMessage.MEMBER_DELETED,
                 data: result
             });
         } catch (error) {

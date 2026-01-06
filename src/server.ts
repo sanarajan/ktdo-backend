@@ -5,14 +5,14 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import './container'; // Register DI
-import { connectDB } from './infrastructure/database/connect';
+import './infrastructure/config/container'; // Register DI
+import { connectDB } from './infrastructure/config/connect';
 import { seedAdmin } from './infrastructure/database/seeders/adminSeeder';
 import { seedLocations } from './infrastructure/database/seeds/seedLocations';
-import authRoutes from './infrastructure/webserver/routes/authRoutes';
-import adminRoutes from './infrastructure/webserver/routes/adminRoutes';
-import locationRoutes from './infrastructure/webserver/routes/locationRoutes';
-import { errorMiddleware } from './infrastructure/webserver/middleware/errorMiddleware';
+import authRoutes from './adapters/routes/authRoutes';
+import adminRoutes from './adapters/routes/adminRoutes';
+import locationRoutes from './adapters/routes/locationRoutes';
+import { errorMiddleware } from './middleware/errorMiddleware';
 
 dotenv.config();
 
