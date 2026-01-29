@@ -31,6 +31,7 @@ export class RegisterDriverUseCase implements IRegisterDriverUseCase {
         const trimmedRto = (data as any).rtoCode?.trim();
         const trimmedStateCode = (data as any).stateCode?.trim();
         const trimmedStateRto = (data as any).stateRtoCode?.trim();
+        const trimmedLicenceNumber = (data as any).licenceNumber?.trim();
 
         const nameRegex = /^[A-Za-z][A-Za-z\s'.-]{1,49}$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -47,6 +48,9 @@ export class RegisterDriverUseCase implements IRegisterDriverUseCase {
         if (!trimmedPhone) errors.push('Phone number is required');
         else if (!phoneRegex.test(trimmedPhone)) errors.push('Phone number must be exactly 10 digits');
 
+        if (!trimmedLicenceNumber) errors.push('Licence number is required');
+        else if (trimmedLicenceNumber.length < 5 || trimmedLicenceNumber.length > 20) errors.push('Licence number must be between 5 and 20 characters');
+console.log("pass validation");
         if (!data.bloodGroup) errors.push('Blood group is required');
         if (!trimmedState) errors.push('State is required');
         if (!trimmedDistrict) errors.push('District is required');
@@ -72,6 +76,7 @@ export class RegisterDriverUseCase implements IRegisterDriverUseCase {
             district: trimmedDistrict!,
             pin: trimmedPin,
             bloodGroup: data.bloodGroup,
+            licenceNumber: trimmedLicenceNumber,
             stateCode: trimmedStateCode,
             rtoCode: trimmedRto,
             stateRtoCode: trimmedStateRto
@@ -79,7 +84,11 @@ export class RegisterDriverUseCase implements IRegisterDriverUseCase {
     }
 
     async execute(data: Partial<Driver>, file?: Express.Multer.File): Promise<Driver> {
+        // console.log('RegisterDriverUseCase - Received data:', { ...data, password: '***' });
+        // console.log('RegisterDriverUseCase - licenceNumber received:', (data as any).licenceNumber);
         const sanitizedData = this.validateRegistrationData(data);
+        // console.log('RegisterDriverUseCase - Sanitized data:', { ...sanitizedData, password: '***' });
+        // console.log('RegisterDriverUseCase - licenceNumber after validation:', (sanitizedData as any).licenceNumber);
         this.logger.info('Registering new driver', { email: sanitizedData.email });
 
         const existingEmail = await this.driverRepo.findByEmail(sanitizedData.email!);
@@ -141,16 +150,18 @@ export class RegisterDriverUseCase implements IRegisterDriverUseCase {
             photoUrl: photoUrl || undefined
             // uniqueId will be assigned when admin approves
         } as Driver;
+        // console.log('RegisterDriverUseCase - Final driverData before save:', { ...driverData, password: '***' });
+        console.log('RegisterDriverUseCase - licenceNumber in driverData:', (driverData as any).licenceNumber);
 
         const result = (await this.driverRepo.create(driverData)) as Driver;
-        this.logger.info('Driver registered successfully', { id: result.id });
+        // this.logger.info('Driver registered successfully', { id: result.id });
 
         // Send registration pending approval email (non-blocking)
         try {
             await this.emailService.sendRegistrationPendingEmail(sanitizedData.email!, sanitizedData.name!);
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
-            this.logger.warn('Failed to send registration pending email', message);
+            // this.logger.warn('Failed to send registration pending email', message);
             // Don't throw - email failure shouldn't prevent registration
         }
 

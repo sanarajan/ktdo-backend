@@ -24,6 +24,7 @@ export interface Driver extends User {
     post?: string;
     pin?: string;
     bloodGroup?: string;
+    licenceNumber?: string;
     emergencyContact?: string;
     status: ApprovalStatus;
     uniqueId?: string;

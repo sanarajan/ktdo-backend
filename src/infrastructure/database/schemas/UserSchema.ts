@@ -18,6 +18,7 @@ const UserSchema = new Schema({
     districtAdminId: { type: Schema.Types.ObjectId, ref: 'User' },
     pin: { type: String },
     bloodGroup: { type: String },
+    licenceNumber: { type: String }, // Driver's licence number
     // RTO Code fields
     stateCode: { type: String }, // State code like KL, TN, etc.
     rtoCode: { type: String }, // Numeric RTO code like 01, 02, etc.

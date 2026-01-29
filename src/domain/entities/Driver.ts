@@ -10,6 +10,7 @@ export interface Driver extends User {
     photoUrl?: string;
     // Registration details
     bloodGroup?: string;
+    licenceNumber?: string;
     pin?: string;
     stateCode?: string;
     rtoCode?: string;

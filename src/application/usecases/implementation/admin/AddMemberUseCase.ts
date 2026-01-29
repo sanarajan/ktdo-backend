@@ -18,6 +18,8 @@ export class AddMemberUseCase implements IAddMemberUseCase {
   ) {}
 
   async execute(data: Partial<Driver>, file?: Express.Multer.File): Promise<Driver> {
+    console.log('AddMemberUseCase - Received data:', { ...data, password: '***' });
+    console.log('AddMemberUseCase - licenceNumber received:', (data as any).licenceNumber);
     // this.logger.info("Admin adding new member", { email: data.email });
 
     const existingEmail = await this.driverRepo.findByEmail(data.email!);
@@ -76,6 +78,8 @@ export class AddMemberUseCase implements IAddMemberUseCase {
       createdBy: (data as any).createdBy,
       createdById: (data as any).createdById,
     } as Driver;
+    console.log('AddMemberUseCase - Final driverData before save:', { ...driverData, password: '***' });
+    console.log('AddMemberUseCase - licenceNumber in driverData:', (driverData as any).licenceNumber);
     const result = (await this.driverRepo.create(driverData)) as Driver;
 
     // Send member approved email when admin adds a member (non-blocking)

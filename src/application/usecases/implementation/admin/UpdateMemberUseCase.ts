@@ -11,13 +11,15 @@ export class UpdateMemberUseCase implements IUpdateMemberUseCase {
     @inject('IUserRepository') private userRepo: IUserRepository,
     @inject('ILoggerService') private logger: ILoggerService,
     @inject('IStorageService') private storageService: IStorageService
-  ) {}
+  ) { }
 
   async execute(
     memberId: string,
     updateData: UpdateMemberDTO,
     file?: Express.Multer.File
   ): Promise<User> {
+    console.log('UpdateMemberUseCase - Received updateData:', updateData);
+    console.log('UpdateMemberUseCase - licenceNumber received:', updateData.licenceNumber);
     const member = await this.userRepo.findById(memberId);
     if (!member) throw new Error('Member not found');
 
@@ -40,6 +42,8 @@ export class UpdateMemberUseCase implements IUpdateMemberUseCase {
     if (updateData.district !== undefined) (member as any).district = updateData.district;
     if (updateData.pin !== undefined) (member as any).pin = updateData.pin;
     if (updateData.bloodGroup !== undefined) (member as any).bloodGroup = updateData.bloodGroup;
+    if (updateData.licenceNumber !== undefined) (member as any).licenceNumber = updateData.licenceNumber;
+    console.log('UpdateMemberUseCase - After setting licenceNumber:', (member as any).licenceNumber);
     if (updateData.stateCode !== undefined) (member as any).stateCode = updateData.stateCode;
     if (updateData.rtoCode !== undefined) (member as any).rtoCode = updateData.rtoCode;
     if (updateData.stateRtoCode !== undefined) (member as any).stateRtoCode = updateData.stateRtoCode;
@@ -51,6 +55,9 @@ export class UpdateMemberUseCase implements IUpdateMemberUseCase {
       } catch (error) {
         this.logger.error('Failed to upload member photo', undefined, { error });
       }
+    } else if (updateData.deletePhoto === 'true' || updateData.deletePhoto === true) {
+      // Explicitly delete photo if requested and no new file provided
+      member.photoUrl = '';
     }
 
     const updatedMember = await this.userRepo.update(memberId, member as Partial<User>);

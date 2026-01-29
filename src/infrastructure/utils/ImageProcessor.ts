@@ -31,7 +31,7 @@ export class ImageProcessor {
   private static readonly ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png'];
 
   // File size limits (in bytes)
-  private static readonly MIN_FILE_SIZE = 30 * 1024; // 30 KB
+  private static readonly MIN_FILE_SIZE = 15 * 1024; // 30 KB
   private static readonly MAX_FILE_SIZE = 300 * 1024; // 300 KB
 
   // Passport photo dimensions

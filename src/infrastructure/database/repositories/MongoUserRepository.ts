@@ -36,9 +36,12 @@ export class MongoUserRepository implements IUserRepository {
     }
 
     async create(user: User): Promise<User> {
-        console.log("is here exist for creation")
+        console.log("MongoUserRepository - create - licenceNumber received:", (user as any).licenceNumber);
         const newUser = new UserModel(user);
+        console.log("MongoUserRepository - create - licenceNumber in UserModel:", (newUser as any).licenceNumber);
         const saved = await newUser.save();
+        // console.log("MongoUserRepository - create - Saved document from MongoDB:", { ...(saved.toObject()), password: '***' });
+        console.log("MongoUserRepository - create - licenceNumber after save:", (saved as any).licenceNumber);
         const obj: any = saved.toObject();
         obj.id = obj._id ? obj._id.toString() : obj.id;
         if (obj.districtAdminId) obj.districtAdminId = obj.districtAdminId.toString();
@@ -47,8 +50,12 @@ export class MongoUserRepository implements IUserRepository {
     }
 
     async update(id: string, user: Partial<User>): Promise<User | null> {
+        console.log("MongoUserRepository - update - Received user data:", { ...user, password: '***' });
+        console.log("MongoUserRepository - update - licenceNumber received:", (user as any).licenceNumber);
         const updated = await UserModel.findByIdAndUpdate(id, user, { new: true });
         if (!updated) return null;
+        console.log("MongoUserRepository - update - Updated document from MongoDB:", { ...(updated.toObject()), password: '***' });
+        console.log("MongoUserRepository - update - licenceNumber after update:", (updated as any).licenceNumber);
         const obj: any = updated.toObject();
         obj.id = obj._id ? obj._id.toString() : obj.id;
         if (obj.districtAdminId) obj.districtAdminId = obj.districtAdminId.toString();

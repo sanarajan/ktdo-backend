@@ -77,6 +77,8 @@ export class AdminController {
             const user = (req as any).user;
             // Log for debugging
             console.log('AddMember user new token data:', user);
+            console.log('AddMember req.body:', req.body);
+            console.log('AddMember licenceNumber:', req.body.licenceNumber);
 
             // Mark who created this member; support several token ID fields
             if (user) {
@@ -191,6 +193,8 @@ export class AdminController {
             console.log("reaches update")
             const { memberId } = req.params;
             const updateData = req.body;
+            console.log('UpdateMember req.body:', req.body);
+            console.log('UpdateMember licenceNumber:', req.body.licenceNumber);
 
             const file = (req as any).file;
             console.log('Update Member Request File:',  (req as any).file);

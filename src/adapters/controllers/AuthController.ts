@@ -31,6 +31,8 @@ export class AuthController {
 
     async register(req: Request, res: Response, next: NextFunction) {
         try {
+           console.log("this is controller reach")
+            console.log('AuthController - register - licenceNumber:', req.body.licenceNumber);
             const file = (req as any).file; // Get the file buffer from multer
             const driver = await this.registerDriverUseCase.execute(req.body, file);
             res.status(StatusCode.CREATED).json({
