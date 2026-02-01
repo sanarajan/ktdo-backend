@@ -4,11 +4,11 @@ import fs from 'fs/promises';
 import { AppError } from '../../domain/errors/AppError';
 
 /**
- * Image validation and processing utility for passport photos
+ * Image validation and processing utility for member photos
  * Requirements:
  * - Accepted formats: JPG, JPEG, PNG
- * - Size: 30 KB - 300 KB
- * - Output: 413×531 pixels (passport ratio)
+ * - Size: 15 KB - 300 KB
+ * - Output: 413×413 pixels (square ratio)
  * - Format: JPEG with quality 80
  * - Metadata: EXIF stripped
  */
@@ -34,14 +34,14 @@ export class ImageProcessor {
   private static readonly MIN_FILE_SIZE = 15 * 1024; // 30 KB
   private static readonly MAX_FILE_SIZE = 300 * 1024; // 300 KB
 
-  // Passport photo dimensions
+  // Member photo dimensions (Square)
   private static readonly PASSPORT_WIDTH = 413;
-  private static readonly PASSPORT_HEIGHT = 531;
+  private static readonly PASSPORT_HEIGHT = 413;
 
-  // Acceptable aspect ratio range for passport photos (portrait)
-  // Passport ratio is 413:531 = 0.778
-  private static readonly MIN_ASPECT_RATIO = 0.7; // Allow some flexibility
-  private static readonly MAX_ASPECT_RATIO = 0.85;
+  // Acceptable aspect ratio range for square photos
+  // Square ratio is 1.0
+  private static readonly MIN_ASPECT_RATIO = 0.98;
+  private static readonly MAX_ASPECT_RATIO = 1.02;
 
   /**
    * Validate image file before processing
@@ -109,27 +109,19 @@ export class ImageProcessor {
   }
 
   /**
-   * Validate image dimensions for passport photo
+   * Validate image dimensions for square photo
    */
   static validateDimensions(dimensions: ImageDimensions): ValidationResult {
     const { width, height } = dimensions;
 
-    // Check if image is in portrait orientation
-    if (width > height) {
-      return {
-        valid: false,
-        error: 'Image must be in portrait orientation (height > width)'
-      };
-    }
-
     // Calculate aspect ratio
     const aspectRatio = width / height;
 
-    // Check if aspect ratio is within acceptable range for passport
+    // Check if aspect ratio is within acceptable range for square photo
     if (aspectRatio < this.MIN_ASPECT_RATIO || aspectRatio > this.MAX_ASPECT_RATIO) {
       return {
         valid: false,
-        error: `Image aspect ratio not suitable for passport photo. Expected ratio between ${this.MIN_ASPECT_RATIO} and ${this.MAX_ASPECT_RATIO}`
+        error: `Image aspect ratio must be square (approx 1:1). Current ratio: ${aspectRatio.toFixed(2)}`
       };
     }
 
@@ -138,7 +130,7 @@ export class ImageProcessor {
 
   /**
    * Process image: resize, compress, and remove metadata
-   * Converts to JPEG with quality 80 at 413×531 dimensions
+   * Converts to JPEG with quality 80 at square dimensions
    */
   static async processImage(buffer: Buffer, outputPath: string): Promise<Buffer> {
     try {
@@ -196,6 +188,6 @@ export class ImageProcessor {
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 8);
     const ext = path.extname(originalName);
-    return `passport_${timestamp}_${randomStr}.jpg`;
+    return `member_${timestamp}_${randomStr}.jpg`;
   }
 }
