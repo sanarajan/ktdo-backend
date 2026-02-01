@@ -5,13 +5,13 @@ import { AppError } from '../../domain/errors/AppError';
 
 /**
  * Image validation and processing utility for member photos
- * Requirements:
+  * Requirements:
  * - Accepted formats: JPG, JPEG, PNG
- * - Size: 15 KB - 300 KB
- * - Output: 413×413 pixels (square ratio)
- * - Format: JPEG with quality 80
- * - Metadata: EXIF stripped
- */
+  * - Size: 15 KB - 2 MB
+    * - Output: 413×413 pixels(square ratio)
+      * - Format: JPEG with quality 80
+        * - Metadata: EXIF stripped
+          */
 
 interface ValidationResult {
   valid: boolean;
@@ -32,7 +32,7 @@ export class ImageProcessor {
 
   // File size limits (in bytes)
   private static readonly MIN_FILE_SIZE = 15 * 1024; // 30 KB
-  private static readonly MAX_FILE_SIZE = 300 * 1024; // 300 KB
+  private static readonly MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
   // Member photo dimensions (Square)
   private static readonly PASSPORT_WIDTH = 413;
@@ -66,7 +66,7 @@ export class ImageProcessor {
     if (file.size > this.MAX_FILE_SIZE) {
       return {
         valid: false,
-        error: `Image too large. Maximum size: ${this.MAX_FILE_SIZE / 1024} KB`
+        error: `Image too large. Maximum size: 2 MB`
       };
     }
 
