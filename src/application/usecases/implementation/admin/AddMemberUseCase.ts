@@ -15,7 +15,7 @@ export class AddMemberUseCase implements IAddMemberUseCase {
     @inject('ILoggerService') private logger: ILoggerService,
     @inject('IStorageService') private storageService: IStorageService,
     @inject('IEmailService') private emailService: any
-  ) {}
+  ) { }
 
   async execute(data: Partial<Driver>, file?: Express.Multer.File): Promise<Driver> {
     console.log('AddMemberUseCase - Received data:', { ...data, password: '***' });
@@ -68,12 +68,18 @@ export class AddMemberUseCase implements IAddMemberUseCase {
       }
     }
 
+    let uniqueId: string | undefined = undefined;
+    const finalStatus = (data && (data as any).status) || ApprovalStatus.PENDING;
+
+    if (finalStatus === ApprovalStatus.APPROVED) {
+      uniqueId = await this.driverRepo.getNextUniqueId();
+    }
+
     const driverData: Driver = {
       ...data,
       role: UserRole.MEMBER,
-      // If caller set status (e.g., district admin), keep it; otherwise default to PENDING
-      status: (data && (data as any).status) || ApprovalStatus.PENDING,
-      uniqueId: undefined,
+      status: finalStatus,
+      uniqueId,
       photoUrl: photoUrl || undefined,
       createdBy: (data as any).createdBy,
       createdById: (data as any).createdById,
