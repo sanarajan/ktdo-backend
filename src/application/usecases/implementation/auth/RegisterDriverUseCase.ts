@@ -25,8 +25,10 @@ export class RegisterDriverUseCase implements IRegisterDriverUseCase {
         const trimmedPhone = data.phone?.trim();
         const trimmedHouse = data.houseName?.trim();
         const trimmedPlace = data.place?.trim();
-        const trimmedState = data.state?.trim();
-        const trimmedDistrict = data.district?.trim();
+        const trimmedWorkingState = data.workingState?.trim();
+        const trimmedWorkingDistrict = data.workingDistrict?.trim();
+        const trimmedPermanentState = (data as any).state?.trim();
+        const trimmedPermanentDistrict = (data as any).district?.trim();
         const trimmedPin = (data as any).pin?.trim();
         const trimmedRto = (data as any).rtoCode?.trim();
         const trimmedStateCode = (data as any).stateCode?.trim();
@@ -50,10 +52,12 @@ export class RegisterDriverUseCase implements IRegisterDriverUseCase {
 
         if (!trimmedLicenceNumber) errors.push('Licence number is required');
         else if (trimmedLicenceNumber.length < 5 || trimmedLicenceNumber.length > 20) errors.push('Licence number must be between 5 and 20 characters');
-console.log("pass validation");
+        console.log("pass validation");
         if (!data.bloodGroup) errors.push('Blood group is required');
-        if (!trimmedState) errors.push('State is required');
-        if (!trimmedDistrict) errors.push('District is required');
+        if (!trimmedWorkingState) errors.push('Working State is required');
+        if (!trimmedWorkingDistrict) errors.push('Working District is required');
+        if (!trimmedPermanentState) errors.push('State (for Address) is required');
+        if (!trimmedPermanentDistrict) errors.push('District (for Address) is required');
         if (!trimmedHouse) errors.push('House name is required');
         if (!trimmedPlace) errors.push('Place is required');
         if (!trimmedPin) errors.push('Pin code is required');
@@ -72,8 +76,10 @@ console.log("pass validation");
             phone: trimmedPhone!,
             houseName: trimmedHouse!,
             place: trimmedPlace!,
-            state: trimmedState!,
-            district: trimmedDistrict!,
+            workingState: trimmedWorkingState!,
+            workingDistrict: trimmedWorkingDistrict!,
+            state: trimmedPermanentState!,
+            district: trimmedPermanentDistrict!,
             pin: trimmedPin,
             bloodGroup: data.bloodGroup,
             licenceNumber: trimmedLicenceNumber,
@@ -98,7 +104,7 @@ console.log("pass validation");
         if (existingPhone) throw new AppError('Phone number already exists', 400);
 
         let photoUrl = '';
-        
+
         if (file) {
             try {
                 // Validate image
@@ -110,11 +116,11 @@ console.log("pass validation");
                 // Process image: resize, compress, strip metadata
                 const filename = ImageProcessor.generateFilename(file.originalname);
                 const outputPath = path.join(__dirname, '../../../../uploads/temp', filename);
-                
+
                 // Create uploads/temp directory if it doesn't exist
                 const fs = require('fs').promises;
                 await fs.mkdir(path.dirname(outputPath), { recursive: true });
-                
+
                 // Process and save image
                 const processedBuffer = await ImageProcessor.processImage(file.buffer, outputPath);
 

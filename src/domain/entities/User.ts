@@ -7,10 +7,12 @@ export interface User {
     name: string;
     role: UserRole;
     phone?: string;
+    workingState?: string;
     state?: string;
+    district?: string;
     houseName?: string;
     place?: string;
-    district?: string; // For district admins
+    workingDistrict?: string; // For district admins
     isBlocked?: boolean;
     createdAt: Date;
     updatedAt: Date;

@@ -29,9 +29,9 @@ export class AdminController {
 
     async createDistrictAdmin(req: Request, res: Response, next: NextFunction) {
         try {
-        console.log('File contriler:', (req as any).file);
+            console.log('File contriler:', (req as any).file);
 
-        const file = (req as any).file; // buffer-based file
+            const file = (req as any).file; // buffer-based file
             const user = (req as any).user;
             if (user) {
                 req.body.createdBy = user.role || 'MEMBER';
@@ -93,8 +93,8 @@ export class AdminController {
             // Enforce District Admin restriction and default status
             if (user && (user.role === 'DISTRICT_ADMIN' || user.role === 'MAIN_ADMIN')) {
                 if (user.role === 'DISTRICT_ADMIN') {
-                    req.body.state = user.state;
-                    req.body.district = user.district;
+                    req.body.workingState = user.workingState;
+                    req.body.workingDistrict = user.workingDistrict;
                     req.body.status = 'APPROVED'; // District Admin-created members are auto-approved
                     // set districtAdminId so GetMembersUseCase can filter by it
                     req.body.districtAdminId = req.body.createdById;
@@ -152,17 +152,17 @@ export class AdminController {
             const bloodGroup = (req.query.bloodGroup as string) || '';
             const stateRtoCode = (req.query.stateRtoCode as string) || '';
             const status = (req.query.status as string) || '';
-            
+
             // If District Admin, fetch by both their assigned members and members in their state/district
             const isDistrictAdmin = user && user.role === 'DISTRICT_ADMIN';
             const districtAdminId = isDistrictAdmin ? user.id : undefined;
-            const state = isDistrictAdmin ? user.state : undefined;
-            const district = isDistrictAdmin ? user.district : undefined;
+            const state = isDistrictAdmin ? user.workingState : undefined;
+            const district = isDistrictAdmin ? user.workingDistrict : undefined;
 
-            const result = await this.getMembersUseCase.execute({ 
-                districtAdminId, 
-                state, 
-                district,
+            const result = await this.getMembersUseCase.execute({
+                districtAdminId,
+                workingState: state,
+                workingDistrict: district,
                 page,
                 limit,
                 search,
@@ -170,7 +170,7 @@ export class AdminController {
                 stateRtoCode,
                 status
             });
-            
+
             console.log('Members retrieved count:', result.members.length);
             res.status(StatusCode.OK).json({
                 success: true,
@@ -197,7 +197,7 @@ export class AdminController {
             console.log('UpdateMember licenceNumber:', req.body.licenceNumber);
 
             const file = (req as any).file;
-            console.log('Update Member Request File:',  (req as any).file);
+            console.log('Update Member Request File:', (req as any).file);
 
             const updatedMember = await this.updateMemberUseCase.execute(memberId, updateData, file);
             res.status(StatusCode.OK).json({
@@ -234,7 +234,7 @@ export class AdminController {
     async recordPrintId(req: Request, res: Response, next: NextFunction) {
         try {
             const { memberId } = req.params;
-            
+
             const updated = await this.recordPrintIdUseCase.execute(memberId);
 
             res.status(StatusCode.OK).json({

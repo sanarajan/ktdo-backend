@@ -13,7 +13,7 @@ export class CreateDistrictAdminUseCase implements ICreateDistrictAdminUseCase {
     @inject('IStorageService') private storageService: IStorageService,
     @inject('IHashService') private hashService: IHashService,
     @inject('IEmailService') private emailService: any
-  ) {}
+  ) { }
 
   async execute(
     data: Partial<DistrictAdmin>,
@@ -27,9 +27,9 @@ export class CreateDistrictAdminUseCase implements ICreateDistrictAdminUseCase {
     if (existingPhone) throw new Error('Phone number already exists');
 
     // Ensure only one district admin per district
-    if (data.state && data.district) {
+    if (data.workingState && data.workingDistrict) {
       const districtAdmins = await this.userRepo.findAllByRole(UserRole.DISTRICT_ADMIN);
-      const conflict = (districtAdmins || []).find(da => da.state === data.state && da.district === data.district);
+      const conflict = (districtAdmins || []).find(da => da.workingState === data.workingState && da.workingDistrict === data.workingDistrict);
       if (conflict) {
         throw new Error('A District Admin already exists for this state/district');
       }
@@ -37,7 +37,7 @@ export class CreateDistrictAdminUseCase implements ICreateDistrictAdminUseCase {
 
     let photoUrl = '';
     if (file) {
-    //   this.logger.info("Uploading admin photo");
+      //   this.logger.info("Uploading admin photo");
 
       try {
         photoUrl = await this.storageService.uploadBuffer(
@@ -67,8 +67,8 @@ export class CreateDistrictAdminUseCase implements ICreateDistrictAdminUseCase {
       await this.emailService.sendDistrictAdminCreatedEmail(
         data.email!,
         data.name!,
-        data.state!,
-        data.district!,
+        data.workingState!,
+        data.workingDistrict!,
         data.password! // Send the plain text password
       );
     } catch (error) {

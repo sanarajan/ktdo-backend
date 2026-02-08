@@ -38,6 +38,8 @@ export class UpdateMemberUseCase implements IUpdateMemberUseCase {
     if (updateData.phone !== undefined) member.phone = updateData.phone;
     if (updateData.houseName !== undefined) (member as any).houseName = updateData.houseName;
     if (updateData.place !== undefined) (member as any).place = updateData.place;
+    if (updateData.workingState !== undefined) (member as any).workingState = updateData.workingState;
+    if (updateData.workingDistrict !== undefined) (member as any).workingDistrict = updateData.workingDistrict;
     if (updateData.state !== undefined) (member as any).state = updateData.state;
     if (updateData.district !== undefined) (member as any).district = updateData.district;
     if (updateData.pin !== undefined) (member as any).pin = updateData.pin;

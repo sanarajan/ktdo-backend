@@ -12,16 +12,16 @@ export class MongoDriverRepository extends MongoUserRepository implements IDrive
         return drivers.map(d => d.toObject() as unknown as Driver);
     }
 
-    async findByStateAndDistrict(state: string, district: string): Promise<Driver[]> {
+    async findByStateAndDistrict(workingState: string, workingDistrict: string): Promise<Driver[]> {
         // Escape special regex characters to prevent errors
         const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
-        const stateRegex = new RegExp(`^\\s*${escapeRegex(state.trim())}\\s*$`, 'i');
-        const districtRegex = new RegExp(`^\\s*${escapeRegex(district.trim())}\\s*$`, 'i');
+        const stateRegex = new RegExp(`^\\s*${escapeRegex(workingState.trim())}\\s*$`, 'i');
+        const districtRegex = new RegExp(`^\\s*${escapeRegex(workingDistrict.trim())}\\s*$`, 'i');
 
         const drivers = await UserModel.find({
-            state: { $regex: stateRegex },
-            district: { $regex: districtRegex },
+            workingState: { $regex: stateRegex },
+            workingDistrict: { $regex: districtRegex },
             role: UserRole.MEMBER,
             isDeleted: { $ne: true }
         });

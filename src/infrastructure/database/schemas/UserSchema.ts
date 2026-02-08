@@ -4,16 +4,19 @@ import { UserRole, ApprovalStatus } from '../../../common/enums';
 const UserSchema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: function(this: any) { return this.role !== UserRole.MEMBER } },
+    password: { type: String, required: function (this: any) { return this.role !== UserRole.MEMBER } },
     role: { type: String, enum: Object.values(UserRole), default: UserRole.MEMBER },
     phone: { type: String },
     // Address replaced by houseName and place
     houseName: { type: String },
     place: { type: String },
     isBlocked: { type: Boolean, default: false },
-    // District Admin specific
+    // Permanent Address
     state: { type: String },
     district: { type: String },
+    // District Admin specific / Working Location
+    workingState: { type: String },
+    workingDistrict: { type: String },
     // Driver specific
     districtAdminId: { type: Schema.Types.ObjectId, ref: 'User' },
     pin: { type: String },

@@ -6,6 +6,8 @@ export interface UpdateMemberDTO {
   phone?: string;
   houseName?: string;
   place?: string;
+  workingState?: string;
+  workingDistrict?: string;
   state?: string;
   district?: string;
   pin?: string;

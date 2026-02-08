@@ -37,8 +37,8 @@ export class LoginUserUseCase implements ILoginUserUseCase {
         const tokens = this.jwtService.generateTokens({
             id: user.id,
             role: user.role,
-            state: (user as any).state,
-            district: (user as any).district
+            workingState: user.workingState,
+            workingDistrict: user.workingDistrict
         });
 
         const { password, ...userWithoutPass } = user;

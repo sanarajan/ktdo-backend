@@ -2,8 +2,8 @@ import { Driver } from '../../../../domain/entities/Driver';
 
 export interface GetMembersOptions {
     districtAdminId?: string;
-    state?: string;
-    district?: string;
+    workingState?: string;
+    workingDistrict?: string;
     page?: number;
     limit?: number;
     search?: string;

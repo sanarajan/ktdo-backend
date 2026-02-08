@@ -13,13 +13,13 @@ export class GetMembersUseCase implements IGetMembersUseCase {
     ) { }
 
     async execute(options?: GetMembersOptions): Promise<{ members: Driver[]; total: number; page: number; totalPages: number }> {
-        let { districtAdminId, state, district, page = 1, limit = 10, search = '', bloodGroup = '', stateRtoCode = '', status = '' } = options || {};
+        let { districtAdminId, workingState: state, workingDistrict: district, page = 1, limit = 10, search = '', bloodGroup = '', stateRtoCode = '', status = '' } = options || {};
 
         if (districtAdminId && (!state || !district)) {
             const admin = await this.userRepo.findById(districtAdminId);
             if (admin) {
-                state = admin.state;
-                district = admin.district;
+                state = admin.workingState;
+                district = admin.workingDistrict;
             }
         }
 
@@ -53,13 +53,13 @@ export class GetMembersUseCase implements IGetMembersUseCase {
         if (search) {
             const searchLower = search.toLowerCase();
             if (districtAdminId) {
-                filteredMembers = allMembers.filter(member => 
+                filteredMembers = allMembers.filter(member =>
                     member.name.toLowerCase().includes(searchLower) ||
                     member.email.toLowerCase().includes(searchLower) ||
                     member.phone?.includes(search)
                 );
             } else {
-                filteredMembers = allMembers.filter(member => 
+                filteredMembers = allMembers.filter(member =>
                     member.name.toLowerCase().includes(searchLower) ||
                     member.email.toLowerCase().includes(searchLower) ||
                     member.phone?.includes(search) ||
@@ -70,19 +70,19 @@ export class GetMembersUseCase implements IGetMembersUseCase {
         }
 
         if (bloodGroup) {
-            filteredMembers = filteredMembers.filter(member => 
+            filteredMembers = filteredMembers.filter(member =>
                 member.bloodGroup?.toLowerCase() === bloodGroup.toLowerCase()
             );
         }
 
         if (stateRtoCode) {
-            filteredMembers = filteredMembers.filter(member => 
+            filteredMembers = filteredMembers.filter(member =>
                 member.stateRtoCode?.toLowerCase().includes(stateRtoCode.toLowerCase())
             );
         }
 
         if (status) {
-            filteredMembers = filteredMembers.filter(member => 
+            filteredMembers = filteredMembers.filter(member =>
                 member.status?.toLowerCase() === status.toLowerCase()
             );
         }

@@ -202,7 +202,7 @@ export class EmailService implements IEmailService {
         }
     }
 
-    async sendDistrictAdminCreatedEmail(email: string, adminName: string, state: string, district: string, password: string): Promise<void> {
+    async sendDistrictAdminCreatedEmail(email: string, adminName: string, workingState: string, workingDistrict: string, password: string): Promise<void> {
         if (!this.transporter) {
             this.logger.warn('Email service not available');
             return;
@@ -217,8 +217,8 @@ export class EmailService implements IEmailService {
                     <br>
                     <p><strong>Your Assignment:</strong></p>
                     <ul>
-                        <li><strong>State:</strong> ${state}</li>
-                        <li><strong>District:</strong> ${district}</li>
+                        <li><strong>Working State:</strong> ${workingState}</li>
+                        <li><strong>Working District:</strong> ${workingDistrict}</li>
                     </ul>
                     <br>
                     <p><strong>Login Credentials:</strong></p>

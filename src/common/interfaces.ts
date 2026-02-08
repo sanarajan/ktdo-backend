@@ -7,7 +7,9 @@ export interface User {
     name: string;
     role: UserRole;
     phone?: string;
-    address?: string;
+    workingState?: string;
+    houseName?: string;
+    place?: string;
     isBlocked?: boolean;
     createdAt?: string | Date;
     updatedAt?: string | Date;
@@ -15,12 +17,13 @@ export interface User {
 }
 
 export interface DistrictAdmin extends User {
-    district: string;
+    workingState: string;
+    workingDistrict: string;
 }
 
 export interface Driver extends User {
     districtAdminId: string;
-        // legacy fields removed: licenseNumber, vehicleNumber, post, emergencyContact
+    // legacy fields removed: licenseNumber, vehicleNumber, post, emergencyContact
     post?: string;
     pin?: string;
     bloodGroup?: string;
@@ -47,6 +50,6 @@ export interface ILogger {
 
 export interface IStorageService {
     uploadFile(file: any, path: string): Promise<string>;
-      uploadBuffer(buffer: Buffer, mimeType: string, folder: string): Promise<string>;
+    uploadBuffer(buffer: Buffer, mimeType: string, folder: string): Promise<string>;
     deleteFile(path: string): Promise<void>;
 }
