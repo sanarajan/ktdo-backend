@@ -73,7 +73,16 @@ app.use(errorMiddleware);
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
+  try {
+    await connectDB();
+    await seedAdmin();
+    await seedLocations();
+    console.log('DB connected and seeded');
+  } catch (err) {
+    console.error('DB connection/seeding failed', err);
+  }
 });
+
 
