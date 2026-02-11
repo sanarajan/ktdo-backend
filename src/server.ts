@@ -71,18 +71,12 @@ app.use('/api/locations', locationRoutes);
 // Error Handling Middleware (must be last)
 app.use(errorMiddleware);
 
-const port = process.env.PORT || 8080;
+// const port = process.env.PORT || 8080;
 
-app.listen(port, async () => {
-  console.log(`Server running on port ${port}`);
-  try {
-    await connectDB();
-    await seedAdmin();
-    await seedLocations();
-    console.log('DB connected and seeded');
-  } catch (err) {
-    console.error('DB connection/seeding failed', err);
-  }
+const PORT = Number(process.env.PORT) || 8080;
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
 
