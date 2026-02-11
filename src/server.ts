@@ -25,14 +25,15 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-
   origin: (origin, callback) => {
     console.log('CORS Origin:', origin);
-    // 1. Allow if no origin (like mobile apps/Postman)
+
     if (!origin) return callback(null, true);
 
-    // 2. Allow if it's in our list OR ends with .vercel.app
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app')
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -40,6 +41,10 @@ app.use(cors({
   },
   credentials: true
 }));
+
+// 👇 ADD THIS LINE
+app.options('*', cors());
+
 // Middleware
 // app.use(cors({
 //     // Replace the URL below with your actual Vercel deployment URL
