@@ -19,7 +19,7 @@ dotenv.config();
 const app = express();
 
 const allowedOrigins = [
-  'https://ktdo-frontend.vercel.app',
+  'https://ktdo-frontend-fawn.vercel.app',
   'http://localhost:5173',
   'http://localhost:5174'
 ];
