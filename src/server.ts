@@ -3,9 +3,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import cors from 'cors';
+import cors,{CorsOptionsDelegate } from 'cors';
 import cookieParser from 'cookie-parser';
-import './infrastructure/config/container'; // Register DI
+import './infrastructure/config/container'; 
 import { connectDB } from './infrastructure/config/connect';
 import { seedAdmin } from './infrastructure/database/seeders/adminSeeder';
 import { seedLocations } from './infrastructure/database/seeds/seedLocations';
@@ -21,38 +21,47 @@ const app = express();
 const allowedOrigins = [
   'https://ktdo-frontend-fawn.vercel.app',
   'http://localhost:5173',
-  'http://localhost:5174'
+  'http://localhost:5174',
+  'http://localhost:5175'
 ];
 
-app.use(cors({
+const corsOptions: CorsOptionsDelegate = (req, callback) => {
+ const origin = req.headers.origin as string | undefined;
 
-  origin: (origin, callback) => {
-    console.log('CORS Origin:', origin);
-    // 1. Allow if no origin (like mobile apps/Postman)
-    if (!origin) return callback(null, true);
 
-    // 2. Allow if it's in our list OR ends with .vercel.app
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
-// Middleware
-// app.use(cors({
-//     // Replace the URL below with your actual Vercel deployment URL
-//     origin: process.env.NODE_ENV === 'production' 
-//             ? 'https://ktdo-frontend.vercel.app' 
-//             : 'http://localhost:5173', 
-//     credentials: true
-// }));
+  console.log('CORS Origin:', origin);
+
+  const allowedOrigins = [
+    'https://ktdo-frontend-fawn.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175'
+  ];
+
+  let corsOptions;
+
+  // Allow requests without origin (Postman, mobile)
+  if (!origin) {
+    corsOptions = { origin: true, credentials: true };
+  } 
+  // Allow if listed or *.vercel.app
+  else if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    corsOptions = { origin: true, credentials: true };
+  } 
+  else {
+    corsOptions = { origin: false };
+  }
+
+  callback(null, corsOptions);
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(cookieParser());
 
-// Database
-// Database and Seeding
+// Database + Seeding
 connectDB().then(async () => {
   await seedAdmin();
   await seedLocations();
@@ -63,7 +72,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/locations', locationRoutes);
 
-// Error Handling Middleware (must be last)
+// Error handler
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
