@@ -25,7 +25,13 @@ export class MongoDriverRepository extends MongoUserRepository implements IDrive
             role: UserRole.MEMBER,
             isDeleted: { $ne: true }
         });
-        return drivers.map(d => d.toObject() as unknown as Driver);
+        return drivers.map(d => {
+            const obj: any = d.toObject();
+            obj.id = obj._id ? obj._id.toString() : obj.id;
+            if (obj.districtAdminId) obj.districtAdminId = obj.districtAdminId.toString();
+            if (obj.createdById) obj.createdById = obj.createdById.toString();
+            return obj as Driver;
+        });
     }
 
     async updateStatus(driverId: string, status: string): Promise<Driver | null> {
