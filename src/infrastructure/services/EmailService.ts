@@ -142,7 +142,7 @@ export class EmailService implements IEmailService {
             const html = `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2>Welcome, ${memberName}!</h2>
-                    <p>Thank you for registering with KTDO (Kerala Taxi Driver Organization).</p>
+                    <p>Thank you for registering with KTDO (Karuna Taxi Driver Organization).</p>
                     <p>Your registration has been received and is currently pending approval from our administrators.</p>
                     <p>We will review your application and send you an approval email once it's processed.</p>
                     <p>This typically takes 1-3 business days.</p>
@@ -178,7 +178,7 @@ export class EmailService implements IEmailService {
             const html = `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2>Welcome, ${memberName}!</h2>
-                    <p>Congratulations! You have been approved as a member of KTDO (Kerala Taxi Driver Organization).</p>
+                    <p>Congratulations! You have been approved as a member of KTDO (Karuna Taxi Driver Organization).</p>
                     <p>Your ID card will be generated and delivered to you as soon as possible.</p>
                     <p>You can now access all member benefits and services.</p>
                     <br>
@@ -213,7 +213,7 @@ export class EmailService implements IEmailService {
             const html = `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2>Congratulations, ${adminName}!</h2>
-                    <p>You have been appointed as a <strong>District Admin</strong> for KTDO (Kerala Taxi Driver Organization).</p>
+                    <p>You have been appointed as a <strong>District Admin</strong> for KTDO (Karuna Taxi Driver Organization).</p>
                     <br>
                     <p><strong>Your Assignment:</strong></p>
                     <ul>
